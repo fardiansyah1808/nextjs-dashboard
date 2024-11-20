@@ -15,7 +15,7 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     console.log("Fetching revenue data...");
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -30,6 +30,10 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
+
+    console.log("Fetching latest invoices...");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
@@ -37,7 +41,7 @@ export async function fetchLatestInvoices() {
       ORDER BY invoices.date DESC
       LIMIT 5`;
 
-    const latestInvoices = data.rows.map((invoice) => ({
+    const latestInvoices = data.rows.map((invoice: any) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
@@ -49,6 +53,8 @@ export async function fetchLatestInvoices() {
 }
 
 export async function fetchCardData() {
+  console.log("Fetching card data...");
+  await new Promise((resolve) => setTimeout(resolve, 600));
   try {
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
@@ -152,7 +158,7 @@ export async function fetchInvoiceById(id: string) {
       WHERE invoices.id = ${id};
     `;
 
-    const invoice = data.rows.map((invoice) => ({
+    const invoice = data.rows.map((invoice: any) => ({
       ...invoice,
       // Convert amount from cents to dollars
       amount: invoice.amount / 100,
@@ -203,7 +209,7 @@ export async function fetchFilteredCustomers(query: string) {
 		ORDER BY customers.name ASC
 	  `;
 
-    const customers = data.rows.map((customer) => ({
+    const customers = data.rows.map((customer: any) => ({
       ...customer,
       total_pending: formatCurrency(customer.total_pending),
       total_paid: formatCurrency(customer.total_paid),
